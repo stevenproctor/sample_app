@@ -6,7 +6,8 @@ describe PagesController do
   [
     ['home', 'Home'],
     ['contact', 'Contact'],
-    ['about', 'About']
+    ['about', 'About'],
+    ['help', 'Help']
   ].each do |action, pageName|
     describe "GET '#{action}'" do
       before(:each) do
