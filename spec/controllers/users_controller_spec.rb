@@ -94,4 +94,71 @@ describe UsersController do
       end
     end
   end
+
+  describe "GET 'edit'" do
+    before(:each) do
+      @user = Factory(:user)
+      test_sign_in(@user)
+      get :edit, :id => @user
+    end
+
+    it "should be successful" do
+      response.should be_success
+    end
+
+    it "should have the right title" do
+      response.should have_selector("title", :content => "Edit user")
+    end
+
+    it "should have a link to change the Gravatar" do
+      gravatar_url = "http://gravatar.com/emails"
+      response.should have_selector("a", :href => gravatar_url,
+                                         :content => "change")
+    end
+  end
+
+  describe "PUT 'update'" do
+    before(:each) do
+      @user = Factory(:user)
+      test_sign_in(@user)
+    end
+
+    describe "failure" do
+      before(:each) do
+        @attr = { :name => "", :email => "", :password => "",
+                  :password_confirmation => "" }
+        put :update, :id => @user, :user => @attr
+      end
+
+      it "should render the 'edit' page" do
+        response.should render_template('edit')
+      end
+
+      it "should have the right title" do
+        response.should have_selector("title", :content => "Edit user")
+      end
+    end
+
+    describe "success" do
+      before(:each) do
+        @attr = { :name => "New Name", :email => "user@example.com",
+                  :password => "barbaz", :password_confirmation => "barbaz" }
+        put :update, :id => @user, :user => @attr
+      end
+
+      it "should change the user's attributes" do
+        @user.reload
+        @user.name.should == @attr[:name]
+        @user.email.should == @attr[:email]
+      end
+
+      it "should redirect to the user show page" do
+        response.should redirect_to(user_path(@user))
+      end
+
+      it "should have a flash message" do
+        flash[:success].should =~ /updated/i
+      end
+    end
+  end
 end
