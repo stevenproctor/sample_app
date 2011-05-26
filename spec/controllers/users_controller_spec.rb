@@ -161,4 +161,39 @@ describe UsersController do
       end
     end
   end
+
+  describe "authentication of edit/update pages" do
+    before(:each) do
+      @user = Factory(:user)
+    end
+
+    describe "for non-signed-in users" do
+      it "should deny access to 'edit'" do
+        get :edit, :id => @user, :user => {}
+        response.should redirect_to(signin_path)
+      end
+
+      it "should deny access to 'update'" do
+        put :update, :id => @user, :user => {}
+        response.should redirect_to(signin_path)
+      end
+    end
+
+    describe "for signed-in users" do
+      before(:each) do
+        wrong_user = Factory(:user, :email => "wrong@example.net")
+        test_sign_in(wrong_user)
+      end
+
+      it "'edit' should redirect to the root path when users don't match" do
+        get :edit, :id => @user
+        response.should redirect_to(root_path)
+      end
+
+      it "'update' should redirect to the root path when users don't match" do
+        get :edit, :id => @user, :user => {}
+        response.should redirect_to(root_path)
+      end
+    end
+  end
 end
