@@ -24,4 +24,17 @@ describe PagesController do
       end
     end
   end
+
+  describe "for a signed-in user" do
+    before(:each) do
+      @user = Factory(:user)
+      test_sign_in(@user)
+    end
+
+    it "should not show the new link" do
+      get :home
+      response.should_not have_selector("a", :content => "Sign up")
+    end
+
+  end
 end
